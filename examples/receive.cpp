@@ -1,10 +1,20 @@
-#include "test_config.hpp"
+#include "udp_msg.hpp"
+#include <cstdio>
 
-//* setup
-using namespace test_config;
-const std::string test_name = "receive";
-const std::string dat_prefix = dat_dir + "/" + test_name + "-";
-const std::string ref_dat_prefix = ref_dat_dir + "/" + test_name + "-";
+//* IP and port
+constexpr char hostname[] = "127.0.0.1";
+constexpr unsigned port = 11337;
+
+enum class Flag : unsigned char {
+	null = 0x0,
+	a = 0x30, //* ASCII: 0
+	b = 0x31, //* ASCII: 1
+	c = 0x32  //* ASCII: 2
+};
+
+constexpr size_t flag_dim = 3;
+constexpr size_t var_dim = 4;
+
 void print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim]);
 
 int

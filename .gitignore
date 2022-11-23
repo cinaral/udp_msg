@@ -1,8 +1,5 @@
 /build/**
 .cache/**
-./temp.cpp
-./temp.exe
-./scripts/build_and_run_temp.sh
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode
