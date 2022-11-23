@@ -105,6 +105,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 			)
 			target_compile_options(
 				${ELEMENT}-test PRIVATE
+				-lws2_32 -llwsock32
 			)
 			add_test(
 				NAME ${ELEMENT}-test 

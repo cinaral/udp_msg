@@ -31,6 +31,7 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	#include <winsock2.h>
+	#include <ws2tcpip.h>
 #else
 	#include <netinet/in.h> //* sockaddr_in
 	#include <sys/socket.h> //* socket, sendto
@@ -49,7 +50,7 @@ send(SOCK_T *sock, sockaddr_in *dest, socklen_t *dest_size, const FLAG_T (&cmd_a
 	constexpr size_t msg_size = flag_size + var_size;      //* message size in bytes
 	static_assert(msg_size <= max_msg_size);
 
-	static unsigned char msg[msg_size]; //* buffer to hold outgoing packet,
+	static char msg[msg_size]; //* buffer to hold outgoing packet,
 	static var_bT<FLAG_T[FLAG_DIM]> cmd_byte_arr;
 	static var_bT<VAR_T[VAR_DIM]> var_byte_arr;
 

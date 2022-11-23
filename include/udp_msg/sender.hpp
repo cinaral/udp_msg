@@ -36,12 +36,12 @@
 	#include <arpa/inet.h>  //* htons, inet_addr
 	#include <netinet/in.h> //* sockaddr_in
 	#include <sys/socket.h> //* socket, sendto
-	#include <unistd.h>     //* close
+	#include <unistd.h> //* close
 #endif
 
 namespace udp_msg
 {
-template <typename SOCK_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM, size_t VAR_DIM> class sender
+template <typename FLAG_T, typename VAR_T, size_t FLAG_DIM, size_t VAR_DIM> class sender
 {
   public:
 	sender(std::string hostname, const uint16_t port)
@@ -54,7 +54,11 @@ template <typename SOCK_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM, siz
 	};
 	~sender()
 	{
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		::closesocket(sock_);
+#else
 		::close(sock_);
+#endif
 	};
 
 	void

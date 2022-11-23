@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include <unistd.h> //* close
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	#include <winsock2.h>
@@ -37,7 +38,7 @@ enum class Flag : unsigned char {
 
 constexpr size_t flag_dim = 3;
 constexpr size_t var_dim = 3;
-constexpr Flag flag_arr_sent[test_config::flag_dim] = {Flag::a, Flag::b, Flag::b};
+constexpr Flag flag_arr_sent[test_config::flag_dim] = {Flag::a, Flag::b, Flag::c};
 constexpr float var_arr_sent[test_config::var_dim] = {2.1e5, -1./3, M_PI};
 
 //* print elapsed time, used for benchmarking tests

@@ -59,7 +59,11 @@ template <typename SOCK_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM, siz
 	};
 	~receiver()
 	{
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		::closesocket(sock_);
+#else
 		::close(sock_);
+#endif
 	};
 
 	bool
