@@ -105,8 +105,13 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 			)
 			target_compile_options(
 				${ELEMENT}-test PRIVATE
-				-lws2_32 -llwsock32
 			)
+			if(WIN32) #* link libraries for windows
+				target_link_libraries(${ELEMENT}-test 
+					wsock32 
+					ws2_32
+				)
+			endif()
 			add_test(
 				NAME ${ELEMENT}-test 
 				COMMAND ${ELEMENT}-test

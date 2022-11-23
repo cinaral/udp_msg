@@ -1,43 +1,44 @@
 #include "test_config.hpp"
 
 //* setup
+using namespace test_config;
 const std::string test_name = "receive";
-const std::string dat_prefix = test_config::dat_dir + "/" + test_name + "-";
-const std::string ref_dat_prefix = test_config::ref_dat_dir + "/" + test_name + "-";
-const std::string hostname = "127.0.0.1";
-constexpr unsigned port = 11337;
-
-using test_config::Flag;
+const std::string dat_prefix = dat_dir + "/" + test_name + "-";
+const std::string ref_dat_prefix = ref_dat_dir + "/" + test_name + "-";
+void print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim]);
 
 int
 main()
 {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	udp_msg::receiver<SOCKET, Flag, float, test_config::flag_dim, test_config::var_dim> udp(hostname, port);
+#ifdef WIN_COMPAT
+	udp_msg::socket<SOCKET, int, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
 #else
-	udp_msg::receiver<int, Flag, float, test_config::flag_dim, test_config::var_dim> udp(hostname, port);
+	udp_msg::socket<int, socklen_t, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
 #endif
-
-	Flag flag[test_config::flag_dim];
-	float val[test_config::var_dim];
+	Flag flag_arr[flag_dim];
+	float var_arr[var_dim];
 
 	while (true) {
 
-		if (udp.receive(flag, val)) {
-			std::cout << "Received" << std::hex;
-
-			for (size_t i = 0; i < test_config::flag_dim; ++i) {
-				std::cout << " 0x" << +static_cast<unsigned char>(flag[i]);
-			}
-
-			std::cout << ":" << std::dec;
-
-			for (size_t i = 0; i < test_config::var_dim; ++i) {
-				std::cout << " " << val[i];
-			}
-			std::cout << " to " << hostname << ":" << port << std::endl;
+		if (udp.receive(flag_arr, var_arr)) {
+			print_result(flag_arr, var_arr);
 		}
 	}
-
 	return 0;
+}
+
+void
+print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim])
+{
+	printf("Received");
+
+	for (size_t i = 0; i < flag_dim; ++i) {
+		printf(" 0x%02x", static_cast<unsigned char>(flag_arr[i]));
+	}
+	printf(":");
+
+	for (size_t i = 0; i < var_dim; ++i) {
+		printf(" %g", var_arr[i]);
+	}
+	printf(" to %s:%u\n", hostname, port);
 }

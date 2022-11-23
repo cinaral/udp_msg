@@ -27,24 +27,18 @@
 #ifndef SENDER_HPP_CINARAL_221122_1423
 #define SENDER_HPP_CINARAL_221122_1423
 
+#include "compat_config.hpp"
 #include "types.hpp"
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	#include <winsock2.h>
-	#include <ws2tcpip.h>
-#else
-	#include <netinet/in.h> //* sockaddr_in
-	#include <sys/socket.h> //* socket, sendto
-#endif
 
 namespace udp_msg
 {
-template <typename SOCK_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM, size_t VAR_DIM>
-void
-send(SOCK_T *sock, sockaddr_in *dest, socklen_t *dest_size, const FLAG_T (&cmd_arr)[FLAG_DIM],
+template <typename SOCK_T, typename SOCKLEN_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM,
+          size_t VAR_DIM>
+bool
+send(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, const FLAG_T (&cmd_arr)[FLAG_DIM],
      const VAR_T (&var_arr)[VAR_DIM])
 {
-	constexpr size_t max_msg_size = 512;                   //* the UDP packet should not be too big
+	constexpr size_t max_msg_size = 512; //* the UDP packet should not be too big
 	constexpr size_t flag_size = sizeof(FLAG_T[FLAG_DIM]); //* flag size in bytes
 	constexpr size_t var_size = sizeof(VAR_T[VAR_DIM]);    //* variable size in bytes
 	constexpr size_t msg_size = flag_size + var_size;      //* message size in bytes
@@ -69,7 +63,12 @@ send(SOCK_T *sock, sockaddr_in *dest, socklen_t *dest_size, const FLAG_T (&cmd_a
 	for (size_t i = 0; i < var_size; ++i) {
 		msg[flag_size + i] = var_byte_arr.b[i];
 	}
-	::sendto(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), *dest_size);
+
+	if (::sendto(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), *dest_size) > 0) {
+		return true;
+	} else {
+		return false;
+	}
 }
 } // namespace udp_msg
 #endif
