@@ -1,20 +1,20 @@
 /*
  * udp_msg
- *  
+ *
  * MIT License
- * 
+ *
  * Copyright (c) 2022 cinaral
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
  * the Software without restriction, including without limitation the rights to
  * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
  * of the Software, and to permit persons to whom the Software is furnished to do
  * so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,10 +27,9 @@
 #ifndef UDP_MSG_HPP_CINARAL_221122_1120
 #define UDP_MSG_HPP_CINARAL_221122_1120
 
-#include "udp_msg/send.hpp"
-#include "udp_msg/sender.hpp"
+#include "udp_msg/compat_config.hpp"
 #include "udp_msg/receive.hpp"
-#include "udp_msg/receiver.hpp"
+#include "udp_msg/send.hpp"
+#include "udp_msg/socket.hpp"
 
 #endif
-

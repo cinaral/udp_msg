@@ -27,30 +27,27 @@
 #ifndef RECEIVE_HPP_CINARAL_221122_1122
 #define RECEIVE_HPP_CINARAL_221122_1122
 
+#include "compat_config.hpp"
 #include "types.hpp"
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	#include <winsock2.h>
-#else
-	#include <netinet/in.h> //* sockaddr_in
-	#include <sys/socket.h> //* socket, sendto
-#endif
 
 namespace udp_msg
 {
-template <typename SOCK_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM, size_t VAR_DIM>
+template <typename SOCK_T, typename SOCKLEN_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM,
+          size_t VAR_DIM>
 bool
-receive(SOCK_T *sock, sockaddr_in *dest, socklen_t *dest_size, FLAG_T (&cmd_arr)[FLAG_DIM], VAR_T (&var_arr)[VAR_DIM])
+receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, FLAG_T (&cmd_arr)[FLAG_DIM],
+        VAR_T (&var_arr)[VAR_DIM])
 {
 	constexpr size_t flag_size = sizeof(FLAG_T[FLAG_DIM]); //* flag size in bytes
 	constexpr size_t var_size = sizeof(VAR_T[VAR_DIM]);    //* variable size in bytes
 	constexpr size_t msg_size = flag_size + var_size;      //* message size in bytes
 
-	static unsigned char msg[msg_size]; //* buffer to hold incoming packet
+	static char msg[msg_size]; //* buffer to hold incoming packet
 	static var_bT<FLAG_T[FLAG_DIM]> cmd_byte_arr;
 	static var_bT<VAR_T[VAR_DIM]> var_byte_arr;
 
-	if (::recvfrom(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), dest_size) > 0) {
+	if (::recvfrom(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), dest_size) >
+	    0) {
 
 		for (size_t i = 0; i < flag_size; ++i) {
 			cmd_byte_arr.b[i] = msg[i];

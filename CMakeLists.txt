@@ -43,10 +43,11 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 
 	#* tests, examples, benchmarks to compile
 	set(TEST_NAMES
-		send
-		receive
+		send_receive
 	)
 	set(EXAMPLE_NAMES
+		send
+		receive
 	)
 	set(BENCHMARK_NAMES
 	)
@@ -106,6 +107,13 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 			target_compile_options(
 				${ELEMENT}-test PRIVATE
 			)
+			if(WIN32) #* link libraries for windows
+				target_link_libraries(
+					${ELEMENT}-test 
+					wsock32 
+					ws2_32
+				)
+			endif()
 			add_test(
 				NAME ${ELEMENT}-test 
 				COMMAND ${ELEMENT}-test
@@ -132,6 +140,13 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 				${ELEMENT}-example PRIVATE
 				-O0 #* optimization level
 			)
+			if(WIN32) #* link libraries for windows
+				target_link_libraries(
+					${ELEMENT}-example 
+					wsock32 
+					ws2_32
+				)
+			endif()
 		endforeach(ELEMENT ${EXAMPLE_NAMES})
 	endif()
 
@@ -157,6 +172,13 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 				#-fno-math-errno #* disable errno 
 				#-ffast-math #* feeling brave?
 			)
+			if(WIN32) #* link libraries for windows
+				target_link_libraries(
+					${ELEMENT}-benchmark 
+					wsock32 
+					ws2_32
+				)
+			endif()
 		endforeach(ELEMENT ${BENCHMARK_NAMES})
 	endif()
 
