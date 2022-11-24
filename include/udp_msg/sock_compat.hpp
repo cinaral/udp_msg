@@ -24,15 +24,19 @@
  * SOFTWARE.
  */
 
-#ifndef COMPAT_CONFIG_HPP_CINARAL_221123_1238
-#define COMPAT_CONFIG_HPP_CINARAL_221123_1238
+/*
+ * This file is intended to address sock.hpp's WIN32 compatibility problems.
+ */
+
+#ifndef SOCK_COMPAT_HPP_CINARAL_221123_1238
+#define SOCK_COMPAT_HPP_CINARAL_221123_1238
 
 #if defined(__WIN32__) || defined(__WIN32) || defined(_WIN32) || defined(WIN32) || \
     defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
-	#define WIN_COMPAT
+	#define WIN32_COMPAT
 #endif
 
-#ifdef WIN_COMPAT
+#ifdef WIN32_COMPAT
 	#include <winsock2.h>
 #else
 	#include <sys/socket.h> //* socket, sendto
@@ -46,14 +50,14 @@
 /*
  * `SOCKET` compatibility
  */
-#ifndef WIN_COMPAT
+#ifndef WIN32_COMPAT
 typedef int SOCKET;
 #endif
 
 /*
  * `socklen_t` compatibility
  */
-#ifdef WIN_COMPAT
+#ifdef WIN32_COMPAT
 typedef int socklen_t;
 #endif
 
@@ -66,7 +70,7 @@ namespace udp_msg
 inline int
 close(SOCKET sock)
 {
-#ifdef WIN_COMPAT
+#ifdef WIN32_COMPAT
 	WSACleanup();
 	return ::closesocket(sock);
 #else
@@ -75,26 +79,12 @@ close(SOCKET sock)
 };
 
 /*
- * `::bind()` compatibility
- */
-inline int
-bind(SOCKET sock, sockaddr_in dest)
-{
-#ifdef WIN_COMPAT
-	return ::bind(sock, (struct sockaddr *)&dest, static_cast<int>(sizeof(dest)));
-#else
-	return ::bind(sock, (struct sockaddr *)&dest, sizeof(dest));
-#endif
-	return true;
-}
-
-/*
  *  `::socket()` compatibility
  */
 inline SOCKET
 socket(int af, int type, int protocol)
 {
-#ifdef WIN_COMPAT
+#ifdef WIN32_COMPAT
 	WSADATA wsa_data;
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != NO_ERROR) {
@@ -102,7 +92,8 @@ socket(int af, int type, int protocol)
 		return INVALID_SOCKET;
 	}
 #endif
-	return ::socket(af, type, protocol); //* start socket
+	//* start socket
+	return ::socket(af, type, protocol);
 };
 
 /*
@@ -111,8 +102,8 @@ socket(int af, int type, int protocol)
 inline void
 set_nonblocking(SOCKET sock)
 {
-#ifdef WIN_COMPAT
-	u_long mode = 1; // 1 to enable non-blocking socket
+#ifdef WIN32_COMPAT
+	u_long mode = 1; //* 1 to enable non-blocking socket
 	ioctlsocket(sock, FIONBIO, &mode);
 #else
 	fcntl(sock, F_SETFL, O_NONBLOCK);

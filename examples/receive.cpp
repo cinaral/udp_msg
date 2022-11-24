@@ -20,11 +20,8 @@ void print_result(Flag (&key_arr)[KEY_DIM], float (&val_arr)[VAL_DIM]);
 int
 main()
 {
-#ifdef WIN_COMPAT
 	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port);
-#else
-	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port);
-#endif
+
 	Flag key_arr[KEY_DIM];
 	float val_arr[VAL_DIM];
 

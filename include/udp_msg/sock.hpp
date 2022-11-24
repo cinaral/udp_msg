@@ -27,19 +27,16 @@
 #ifndef SOCKET_HPP_CINARAL_221122_1423
 #define SOCKET_HPP_CINARAL_221122_1423
 
-#include "compat_config.hpp"
 #include "receive.hpp"
 #include "send.hpp"
+#include "sock_compat.hpp"
 #include <fcntl.h>
 
 namespace udp_msg
 {
 
 /*
- * A socket that can be used to send and receive messages.
- *
- * `sock sock_obj(hostname, port, OPT:is_nonblocking, OPT:is_binding, OPT:af, OPT:type,
- * OPT:protocol);`
+ * A socket class to send and receive messages.
  */
 template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class sock
 {
@@ -48,23 +45,25 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 	     const bool is_binding = true, const int af = AF_INET, const int type = SOCK_DGRAM,
 	     const int protocol = 0)
 	{
-		//* Create the socket
+		//* create the socket
 		sock_ = ::udp_msg::socket(af, type, protocol);
 
 		if (sock_ > 0) {
-			dest_.sin_family = AF_INET;
-			dest_.sin_addr.s_addr = inet_addr(hostname);
-			dest_.sin_port = htons(port);
-			dest_size_ = sizeof(dest_);
+			//* specify the host
+			host_in_.sin_family = AF_INET;
+			host_in_.sin_addr.s_addr = inet_addr(hostname);
+			host_in_.sin_port = htons(port);
+			host_ = reinterpret_cast<sockaddr *>(&host_in_);
+			host_size_ = sizeof(host_in_);
 
-			//* Do not block to send and receive
+			//* do not block to send and receive
 			if (is_nonblocking) {
 				::udp_msg::set_nonblocking(sock_);
 			}
 
-			//* Bind to port in order to receive, this is not required to send
+			//* bind to port in order to receive, this is not required to send
 			if (is_binding) {
-				if (::udp_msg::bind(sock_, dest_) < 0) {
+				if (::bind(sock_, host_, host_size_) < 0) {
 					printf("Binding failed.\n");
 				}
 			}
@@ -75,7 +74,7 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 	};
 	~sock()
 	{
-		//* Close the socket
+		//* close the socket
 		::udp_msg::close(sock_);
 	};
 
@@ -85,13 +84,13 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 	 * `receive(OUT:key_arr, OUT:val_arr)`
 	 *
 	 * OUT:
-	 * 1. key_arr - array of keys
-	 * 2. val_arr - array of values
+	 * 1. `key_arr`: array of keys
+	 * 2. `val_arr`: array of values
 	 */
 	int
 	receive(KEY_T (&key_arr)[KEY_DIM], VAL_T (&val_arr)[VAL_DIM])
 	{
-		return ::udp_msg::receive(&sock_, &dest_, &dest_size_, key_arr, val_arr);
+		return ::udp_msg::receive(&sock_, host_, &host_size_, key_arr, val_arr);
 	};
 
 	/*
@@ -100,19 +99,21 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 	 * `receive(key_arr, val_arr)`
 	 *
 	 * IN:
-	 * 1. key_arr - array of keys
-	 * 2. val_arr - array of values
+	 * 1. `key_arr`: array of keys
+	 * 2. `val_arr`: array of values
 	 */
 	int
 	send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM])
 	{
-		return ::udp_msg::send(&sock_, &dest_, &dest_size_, key_arr, val_arr);
+		return ::udp_msg::send(&sock_, host_, host_size_, key_arr, val_arr);
 	};
 
   private:
 	SOCKET sock_;
-	sockaddr_in dest_;
-	socklen_t dest_size_;
+	sockaddr_in host_in_;
+	sockaddr *host_;
+	// sockaddr_in host_;
+	socklen_t host_size_;
 };
 } // namespace udp_msg
 

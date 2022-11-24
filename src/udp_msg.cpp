@@ -184,11 +184,8 @@ void print_result();
 int
 main()
 {
-#ifdef WIN_COMPAT
 	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port, false);
-#else
-	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port, false);
-#endif
+
 	udp.send(flag_arr_sent, var_arr_sent);
 	print_result();
 

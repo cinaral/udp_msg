@@ -27,41 +27,56 @@
 #ifndef RECEIVE_HPP_CINARAL_221122_1122
 #define RECEIVE_HPP_CINARAL_221122_1122
 
-#include "compat_config.hpp"
+#include "sock_compat.hpp"
 #include "types.hpp"
 
 namespace udp_msg
 {
+/*
+ * Receives a UDP message to a socket.
+ *
+ * `receive(sock, dest, dest_size, OUT:key_arr, OUT:val_arr)`
+ *
+ * IN:
+ * 1. `sock`: socket
+ * 2. `from`: sender's address
+ * 3. `from_size`: size of `from`
+ *
+ * OUT:
+ * 1. `key_arr`: array of keys
+ * 2. `val_arr`: array of values
+ */
 template <typename SOCK_T, typename SOCKLEN_T, typename KEY_T, typename VAL_T, size_t KEY_DIM,
           size_t VAL_DIM>
 int
-receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, KEY_T (&key_arr)[KEY_DIM],
+receive(SOCK_T *sock, sockaddr *from, SOCKLEN_T *from_size, KEY_T (&key_arr)[KEY_DIM],
         VAL_T (&val_arr)[VAL_DIM])
 {
 	constexpr size_t key_size = sizeof(KEY_T[KEY_DIM]); //* flag size in bytes
 	constexpr size_t val_size = sizeof(VAL_T[VAL_DIM]); //* variable size in bytes
 	constexpr size_t msg_size = key_size + val_size;    //* message size in bytes
+	static char msg[msg_size];                          //* buffer to hold incoming packet
+	static var_bT<KEY_T[KEY_DIM]> key_byte_arr; //* buffer of KEY_T and unsigned char union
+	static var_bT<VAL_T[VAL_DIM]> val_byte_arr; //* buffer of VAL_T and unsigned char union
 
-	static char msg[msg_size]; //* buffer to hold incoming packet
-	static var_bT<KEY_T[KEY_DIM]> key_byte_arr;
-	static var_bT<VAL_T[VAL_DIM]> val_byte_arr;
+	//* receive message
+	int res = ::recvfrom(*sock, msg, msg_size, 0, from, from_size);
 
-	int res =
-	    ::recvfrom(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), dest_size);
-
+	//* if received data
 	if (res > 0) {
+		//* read keys in msg
 		for (size_t i = 0; i < key_size; ++i) {
 			key_byte_arr.b[i] = msg[i];
 		}
-
+		//* read values in msg
 		for (size_t i = 0; i < val_size; ++i) {
 			val_byte_arr.b[i] = msg[key_size + i];
 		}
-
+		//* copy keys from the union
 		for (size_t i = 0; i < KEY_DIM; ++i) {
 			key_arr[i] = key_byte_arr.v[i];
 		}
-
+		//* copy values from the union
 		for (size_t i = 0; i < VAL_DIM; ++i) {
 			val_arr[i] = val_byte_arr.v[i];
 		}
