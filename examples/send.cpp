@@ -1,5 +1,5 @@
-#include <cstdio>
 #include "udp_msg.hpp"
+#include <cstdio>
 
 //* IP and port
 constexpr char hostname[] = "127.0.0.1";
@@ -23,9 +23,9 @@ int
 main()
 {
 #ifdef WIN_COMPAT
-	udp_msg::socket<SOCKET, int, Flag, float, flag_dim, var_dim> udp(hostname, port, false);
+	udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port, false);
 #else
-	udp_msg::socket<int, socklen_t, Flag, float, flag_dim, var_dim> udp(hostname, port, false);
+	udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port, false);
 #endif
 	udp.send(flag_arr_sent, var_arr_sent);
 	print_result();

@@ -21,9 +21,9 @@ int
 main()
 {
 #ifdef WIN_COMPAT
-	udp_msg::socket<SOCKET, int, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
+	udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port, true);
 #else
-	udp_msg::socket<int, socklen_t, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
+	udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port, true);
 #endif
 	Flag flag_arr[flag_dim];
 	float var_arr[var_dim];

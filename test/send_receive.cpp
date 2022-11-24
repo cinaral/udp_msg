@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <string>
 #include <thread>
+#include <unistd.h>
 
 #ifndef M_PI
 	#define M_PI 3.14159265358979323846
@@ -32,9 +33,9 @@ void receive_fun();
 void print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim]);
 
 #ifdef WIN_COMPAT
-udp_msg::socket<SOCKET, int, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
+udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port);
 #else
-udp_msg::socket<int, socklen_t, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
+udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port);
 #endif
 
 int
@@ -64,7 +65,7 @@ receive_fun()
 	bool did_receive = false;
 
 	while (!did_receive) {
-		if (udp.receive(flag_arr, var_arr)) {
+		if (udp.receive(flag_arr, var_arr) > 0) {
 			did_receive = true;
 		}
 	}

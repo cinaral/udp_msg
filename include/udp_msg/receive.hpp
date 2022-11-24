@@ -34,8 +34,8 @@ namespace udp_msg
 {
 template <typename SOCK_T, typename SOCKLEN_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM,
           size_t VAR_DIM>
-bool
-receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, FLAG_T (&cmd_arr)[FLAG_DIM],
+int
+receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, FLAG_T (&flag_arr)[FLAG_DIM],
         VAR_T (&var_arr)[VAR_DIM])
 {
 	constexpr size_t flag_size = sizeof(FLAG_T[FLAG_DIM]); //* flag size in bytes
@@ -43,14 +43,15 @@ receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, FLAG_T (&cmd_arr)
 	constexpr size_t msg_size = flag_size + var_size;      //* message size in bytes
 
 	static char msg[msg_size]; //* buffer to hold incoming packet
-	static var_bT<FLAG_T[FLAG_DIM]> cmd_byte_arr;
+	static var_bT<FLAG_T[FLAG_DIM]> flag_byte_arr;
 	static var_bT<VAR_T[VAR_DIM]> var_byte_arr;
 
-	if (::recvfrom(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), dest_size) >
-	    0) {
+	int res =
+	    ::recvfrom(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), dest_size);
 
+	if (res > 0) {
 		for (size_t i = 0; i < flag_size; ++i) {
-			cmd_byte_arr.b[i] = msg[i];
+			flag_byte_arr.b[i] = msg[i];
 		}
 
 		for (size_t i = 0; i < var_size; ++i) {
@@ -58,16 +59,14 @@ receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, FLAG_T (&cmd_arr)
 		}
 
 		for (size_t i = 0; i < FLAG_DIM; ++i) {
-			cmd_arr[i] = cmd_byte_arr.v[i];
+			flag_arr[i] = flag_byte_arr.v[i];
 		}
 
 		for (size_t i = 0; i < VAR_DIM; ++i) {
 			var_arr[i] = var_byte_arr.v[i];
 		}
-		return true;
-	} else {
-		return false;
 	}
+	return res;
 }
 } // namespace udp_msg
 #endif
