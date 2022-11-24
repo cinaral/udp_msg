@@ -12,43 +12,43 @@ enum class Flag : unsigned char {
 	c = 0x32  //* ASCII: 2
 };
 
-constexpr size_t flag_dim = 3;
-constexpr size_t var_dim = 4;
+constexpr size_t KEY_DIM = 3;
+constexpr size_t VAL_DIM = 4;
 
-void print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim]);
+void print_result(Flag (&key_arr)[KEY_DIM], float (&val_arr)[VAL_DIM]);
 
 int
 main()
 {
 #ifdef WIN_COMPAT
-	udp_msg::socket<SOCKET, int, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
+	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port);
 #else
-	udp_msg::socket<int, socklen_t, Flag, float, flag_dim, var_dim> udp(hostname, port, true);
+	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port);
 #endif
-	Flag flag_arr[flag_dim];
-	float var_arr[var_dim];
+	Flag key_arr[KEY_DIM];
+	float val_arr[VAL_DIM];
 
 	while (true) {
 
-		if (udp.receive(flag_arr, var_arr)) {
-			print_result(flag_arr, var_arr);
+		if (udp.receive(key_arr, val_arr)) {
+			print_result(key_arr, val_arr);
 		}
 	}
 	return 0;
 }
 
 void
-print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim])
+print_result(Flag (&key_arr)[KEY_DIM], float (&val_arr)[VAL_DIM])
 {
 	printf("Received");
 
-	for (size_t i = 0; i < flag_dim; ++i) {
-		printf(" 0x%02x", static_cast<unsigned char>(flag_arr[i]));
+	for (size_t i = 0; i < KEY_DIM; ++i) {
+		printf(" 0x%02x", static_cast<unsigned char>(key_arr[i]));
 	}
 	printf(":");
 
-	for (size_t i = 0; i < var_dim; ++i) {
-		printf(" %g", var_arr[i]);
+	for (size_t i = 0; i < VAL_DIM; ++i) {
+		printf(" %g", val_arr[i]);
 	}
 	printf(" to %s:%u\n", hostname, port);
 }

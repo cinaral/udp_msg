@@ -30,6 +30,6 @@
 #include "udp_msg/compat_config.hpp"
 #include "udp_msg/receive.hpp"
 #include "udp_msg/send.hpp"
-#include "udp_msg/socket.hpp"
+#include "udp_msg/sock.hpp"
 
 #endif

@@ -35,86 +35,89 @@
 #ifdef WIN_COMPAT
 	#include <winsock2.h>
 #else
+	#include <sys/socket.h> //* socket, sendto
 	#include <arpa/inet.h>  //* htons, inet_addr
 	#include <netinet/in.h> //* sockaddr_in
-	#include <sys/socket.h> //* socket, sendto
+	#include <fcntl.h>      //* fcntl
 #endif
 #include <unistd.h> //* close
 #include <cstdio>   //* printf
 
+/*
+ * `SOCKET` compatibility
+ */
+#ifndef WIN_COMPAT
+typedef int SOCKET;
+#endif
+
+/*
+ * `socklen_t` compatibility
+ */
+#ifdef WIN_COMPAT
+typedef int socklen_t;
+#endif
+
 namespace udp_msg
 {
-//* ::close() compatibility
-template <typename SOCK_T>
-void
-close_socket(SOCK_T *sock)
+
+/*
+ * `::close()` compatibility
+ */
+inline int
+close(SOCKET sock)
 {
 #ifdef WIN_COMPAT
-	::closesocket(*sock);
+	WSACleanup();
+	return ::closesocket(sock);
 #else
-	::close(*sock);
+	return ::close(sock);
 #endif
 };
 
-//* ::socket() compatibility
-template <typename SOCK_T, typename SOCKLEN_T>
-bool
-start_socket(const char hostname[], const unsigned port, SOCK_T *sock, sockaddr_in *dest,
-             SOCKLEN_T *dest_size)
+/*
+ * `::bind()` compatibility
+ */
+inline int
+bind(SOCKET sock, sockaddr_in dest)
+{
+#ifdef WIN_COMPAT
+	return ::bind(sock, (struct sockaddr *)&dest, static_cast<int>(sizeof(dest)));
+#else
+	return ::bind(sock, (struct sockaddr *)&dest, sizeof(dest));
+#endif
+	return true;
+}
+
+/*
+ *  `::socket()` compatibility
+ */
+inline SOCKET
+socket(int af, int type, int protocol)
 {
 #ifdef WIN_COMPAT
 	WSADATA wsa_data;
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != NO_ERROR) {
-		wprintf(L"Error at WSAStartup()\n");
-		return false;
+		printf("Error at WSAStartup()\n");
+		return INVALID_SOCKET;
 	}
 #endif
-	*sock = ::socket(AF_INET, SOCK_DGRAM, 0); //* start socket
-	dest->sin_family = AF_INET;
-	dest->sin_addr.s_addr = inet_addr(hostname);
-	dest->sin_port = htons(port);
-	*dest_size = sizeof(*dest);
-
-#ifdef WIN_COMPAT
-	if (*sock == INVALID_SOCKET) {
-		wprintf(L"Error at socket(): %ld\n", WSAGetLastError());
-		WSACleanup();
-		close_socket<SOCK_T>(sock);
-		return false;
-	}
-#else
-	if (*sock < 0) {
-		perror("socket");
-		close_socket<SOCK_T>(sock);
-		return false;
-	}
-#endif
-	return true;
+	return ::socket(af, type, protocol); //* start socket
 };
 
-//* ::bind() compatibility
-template <typename SOCK_T, typename SOCKLEN_T>
-bool
-bind_socket(SOCK_T *sock, sockaddr_in *dest)
+/*
+ *  `fcntl()` compatibility
+ */
+inline void
+set_nonblocking(SOCKET sock)
 {
 #ifdef WIN_COMPAT
-	if (::bind(*sock, (struct sockaddr *)dest, static_cast<int>(sizeof(*dest))) ==
-	    SOCKET_ERROR) {
-		wprintf(L"bind failed with error %u\n", WSAGetLastError());
-		close_socket<SOCK_T>(sock);
-		WSACleanup();
-		return false;
-	}
+	u_long mode = 1; // 1 to enable non-blocking socket
+	ioctlsocket(sock, FIONBIO, &mode);
 #else
-	if (::bind(*sock, (struct sockaddr *)dest, sizeof(*dest)) < 0) {
-		perror("bind");
-		close_socket<SOCK_T>(sock);
-		return false;
-	}
+	fcntl(sock, F_SETFL, O_NONBLOCK);
 #endif
-	return true;
-}
+};
 } // namespace udp_msg
 
 #endif

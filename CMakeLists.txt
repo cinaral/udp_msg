@@ -9,21 +9,14 @@ project(
 #* dependencies
 Include(FetchContent)
 
-set(matrix_rw_VERSION 1.0.2) #* matrix_rw, used for testing
-set(matrix_op_VERSION 1.0.3) #* matrix_op, used for testing
+set(cxxopts_VERSION 3.0.0) #* cxxopts, used for CLI argument parsing
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 	FetchContent_Declare(
-		matrix_rw 
-		URL https://github.com/cinaral/matrix_rw/releases/download/v${matrix_rw_VERSION}/matrix_rw-src.zip
+		cxxopts 
+		URL https://github.com/jarro2783/cxxopts/archive/refs/tags/v${cxxopts_VERSION}.zip 
 	)
-	FetchContent_MakeAvailable(matrix_rw)
-
-	FetchContent_Declare(
-		matrix_op 
-		URL https://github.com/cinaral/matrix_op/releases/download/v${matrix_op_VERSION}/matrix_op-src.zip
-	)
-	FetchContent_MakeAvailable(matrix_op)
+	FetchContent_MakeAvailable(cxxopts)
 endif()
 
 
@@ -46,8 +39,8 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 		send_receive
 	)
 	set(EXAMPLE_NAMES
-		send
-		receive
+		#send
+		#receive
 	)
 	set(BENCHMARK_NAMES
 	)
@@ -86,6 +79,17 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 	#***************#
 	#* Executables *#
 	#***************#
+
+	#* udp_msg
+	add_executable(
+		udp_msg 
+		${SRC_DIR}/udp_msg.cpp				
+	)
+	target_include_directories(
+		udp_msg PRIVATE 
+		${INCLUDE_DIR}
+		${cxxopts_SOURCE_DIR}/include
+	)
 
 	#***********#
 	#* Testing *#
