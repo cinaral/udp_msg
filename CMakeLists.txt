@@ -9,16 +9,6 @@ project(
 #* dependencies
 Include(FetchContent)
 
-set(cxxopts_VERSION 3.0.0) #* cxxopts, used for CLI argument parsing
-
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-	FetchContent_Declare(
-		cxxopts 
-		URL https://github.com/jarro2783/cxxopts/archive/refs/tags/v${cxxopts_VERSION}.zip 
-	)
-	FetchContent_MakeAvailable(cxxopts)
-endif()
-
 
 
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -39,8 +29,8 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 		send_receive
 	)
 	set(EXAMPLE_NAMES
-		#send
-		#receive
+		send
+		receive
 	)
 	set(BENCHMARK_NAMES
 	)
@@ -75,21 +65,6 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 	if(SINGLE_PRECISION)
 		add_compile_options(-D__USE_SINGLE_PRECISION__) #* use single precision floats
 	endif()
-
-	#***************#
-	#* Executables *#
-	#***************#
-
-	#* udp_msg
-	add_executable(
-		udp_msg 
-		${SRC_DIR}/udp_msg.cpp				
-	)
-	target_include_directories(
-		udp_msg PRIVATE 
-		${INCLUDE_DIR}
-		${cxxopts_SOURCE_DIR}/include
-	)
 
 	#***********#
 	#* Testing *#
