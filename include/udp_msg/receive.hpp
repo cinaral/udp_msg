@@ -32,38 +32,38 @@
 
 namespace udp_msg
 {
-template <typename SOCK_T, typename SOCKLEN_T, typename FLAG_T, typename VAR_T, size_t FLAG_DIM,
-          size_t VAR_DIM>
+template <typename SOCK_T, typename SOCKLEN_T, typename KEY_T, typename VAL_T, size_t KEY_DIM,
+          size_t VAL_DIM>
 int
-receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, FLAG_T (&flag_arr)[FLAG_DIM],
-        VAR_T (&var_arr)[VAR_DIM])
+receive(SOCK_T *sock, sockaddr_in *dest, SOCKLEN_T *dest_size, KEY_T (&key_arr)[KEY_DIM],
+        VAL_T (&val_arr)[VAL_DIM])
 {
-	constexpr size_t flag_size = sizeof(FLAG_T[FLAG_DIM]); //* flag size in bytes
-	constexpr size_t var_size = sizeof(VAR_T[VAR_DIM]);    //* variable size in bytes
-	constexpr size_t msg_size = flag_size + var_size;      //* message size in bytes
+	constexpr size_t key_size = sizeof(KEY_T[KEY_DIM]); //* flag size in bytes
+	constexpr size_t val_size = sizeof(VAL_T[VAL_DIM]); //* variable size in bytes
+	constexpr size_t msg_size = key_size + val_size;    //* message size in bytes
 
 	static char msg[msg_size]; //* buffer to hold incoming packet
-	static var_bT<FLAG_T[FLAG_DIM]> flag_byte_arr;
-	static var_bT<VAR_T[VAR_DIM]> var_byte_arr;
+	static var_bT<KEY_T[KEY_DIM]> key_byte_arr;
+	static var_bT<VAL_T[VAL_DIM]> val_byte_arr;
 
 	int res =
 	    ::recvfrom(*sock, msg, msg_size, 0, reinterpret_cast<sockaddr *>(dest), dest_size);
 
 	if (res > 0) {
-		for (size_t i = 0; i < flag_size; ++i) {
-			flag_byte_arr.b[i] = msg[i];
+		for (size_t i = 0; i < key_size; ++i) {
+			key_byte_arr.b[i] = msg[i];
 		}
 
-		for (size_t i = 0; i < var_size; ++i) {
-			var_byte_arr.b[i] = msg[flag_size + i];
+		for (size_t i = 0; i < val_size; ++i) {
+			val_byte_arr.b[i] = msg[key_size + i];
 		}
 
-		for (size_t i = 0; i < FLAG_DIM; ++i) {
-			flag_arr[i] = flag_byte_arr.v[i];
+		for (size_t i = 0; i < KEY_DIM; ++i) {
+			key_arr[i] = key_byte_arr.v[i];
 		}
 
-		for (size_t i = 0; i < VAR_DIM; ++i) {
-			var_arr[i] = var_byte_arr.v[i];
+		for (size_t i = 0; i < VAL_DIM; ++i) {
+			val_arr[i] = val_byte_arr.v[i];
 		}
 	}
 	return res;

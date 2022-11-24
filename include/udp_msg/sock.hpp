@@ -38,16 +38,18 @@ namespace udp_msg
 /*
  * A socket that can be used to send and receive messages.
  *
- * `sock sock_obj(hostname, port, is_receiving, is_nonblocking)`
+ * `sock sock_obj(hostname, port, OPT:is_nonblocking, OPT:is_binding, OPT:af, OPT:type,
+ * OPT:protocol);`
  */
-template <typename FLAG_T, typename VAR_T, size_t FLAG_DIM, size_t VAR_DIM> class sock
+template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class sock
 {
   public:
-	sock(const char hostname[], const unsigned port, const bool is_receiving = true,
-	     const bool is_nonblocking = true)
+	sock(const char hostname[], const unsigned port, const bool is_nonblocking = true,
+	     const bool is_binding = true, const int af = AF_INET, const int type = SOCK_DGRAM,
+	     const int protocol = 0)
 	{
 		//* Create the socket
-		sock_ = ::udp_msg::socket(AF_INET, SOCK_DGRAM, 0);
+		sock_ = ::udp_msg::socket(af, type, protocol);
 
 		if (sock_ > 0) {
 			dest_.sin_family = AF_INET;
@@ -60,8 +62,8 @@ template <typename FLAG_T, typename VAR_T, size_t FLAG_DIM, size_t VAR_DIM> clas
 				::udp_msg::set_nonblocking(sock_);
 			}
 
-			//* Bind to port to receive, this is not required to send
-			if (is_receiving) {
+			//* Bind to port in order to receive, this is not required to send
+			if (is_binding) {
 				if (::udp_msg::bind(sock_, dest_) < 0) {
 					printf("Binding failed.\n");
 				}
@@ -78,33 +80,33 @@ template <typename FLAG_T, typename VAR_T, size_t FLAG_DIM, size_t VAR_DIM> clas
 	};
 
 	/*
-	 * Receives a UDP message of size FLAG_DIM + VAR_DIM
+	 * Receives a UDP message of size KEY_DIM + VAL_DIM
 	 *
-	 * `receive(OUT:flag_arr, OUT:var_arr)`
+	 * `receive(OUT:key_arr, OUT:val_arr)`
 	 *
 	 * OUT:
-	 * 1. flag_arr - array of flags
-	 * 2. var_arr - array of variables
+	 * 1. key_arr - array of keys
+	 * 2. val_arr - array of values
 	 */
 	int
-	receive(FLAG_T (&flag_arr)[FLAG_DIM], VAR_T (&var_arr)[VAR_DIM])
+	receive(KEY_T (&key_arr)[KEY_DIM], VAL_T (&val_arr)[VAL_DIM])
 	{
-		return ::udp_msg::receive(&sock_, &dest_, &dest_size_, flag_arr, var_arr);
+		return ::udp_msg::receive(&sock_, &dest_, &dest_size_, key_arr, val_arr);
 	};
 
 	/*
-	 * Sends a UDP message of size FLAG_DIM + VAR_DIM
+	 * Sends a UDP message of size KEY_DIM + VAL_DIM
 	 *
-	 * `receive(flag_arr, var_arr)`
-	 * 
+	 * `receive(key_arr, val_arr)`
+	 *
 	 * IN:
-	 * 1. flag_arr - array of flags
-	 * 2. var_arr - array of variables
+	 * 1. key_arr - array of keys
+	 * 2. val_arr - array of values
 	 */
 	int
-	send(const FLAG_T (&flag_arr)[FLAG_DIM], const VAR_T (&var_arr)[VAR_DIM])
+	send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM])
 	{
-		return ::udp_msg::send(&sock_, &dest_, &dest_size_, flag_arr, var_arr);
+		return ::udp_msg::send(&sock_, &dest_, &dest_size_, key_arr, val_arr);
 	};
 
   private:

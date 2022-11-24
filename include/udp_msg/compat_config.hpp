@@ -43,16 +43,16 @@
 #include <unistd.h> //* close
 #include <cstdio>   //* printf
 
-/* 
-* `SOCKET` compatibility
-*/
+/*
+ * `SOCKET` compatibility
+ */
 #ifndef WIN_COMPAT
 typedef int SOCKET;
 #endif
 
-/* 
-* `socklen_t` compatibility
-*/
+/*
+ * `socklen_t` compatibility
+ */
 #ifdef WIN_COMPAT
 typedef int socklen_t;
 #endif
@@ -60,9 +60,9 @@ typedef int socklen_t;
 namespace udp_msg
 {
 
-/* 
-* `::close()` compatibility
-*/
+/*
+ * `::close()` compatibility
+ */
 inline int
 close(SOCKET sock)
 {
@@ -74,9 +74,9 @@ close(SOCKET sock)
 #endif
 };
 
-/* 
-* `::bind()` compatibility
-*/
+/*
+ * `::bind()` compatibility
+ */
 inline int
 bind(SOCKET sock, sockaddr_in dest)
 {
@@ -88,9 +88,9 @@ bind(SOCKET sock, sockaddr_in dest)
 	return true;
 }
 
-/* 
-*  `::socket()` compatibility
-*/
+/*
+ *  `::socket()` compatibility
+ */
 inline SOCKET
 socket(int af, int type, int protocol)
 {
@@ -105,9 +105,9 @@ socket(int af, int type, int protocol)
 	return ::socket(af, type, protocol); //* start socket
 };
 
-/* 
-*  `fcntl()` compatibility
-*/
+/*
+ *  `fcntl()` compatibility
+ */
 inline void
 set_nonblocking(SOCKET sock)
 {

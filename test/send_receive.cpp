@@ -15,28 +15,23 @@ using udp_msg::size_t;
 const char hostname[] = "127.0.0.1";
 constexpr unsigned port = 11337;
 
-enum class Flag : unsigned char {
+enum class Key : unsigned char {
 	null = 0x0,
 	a = 0x30, //* ASCII: 0
 	b = 0x31, //* ASCII: 1
 	c = 0x32  //* ASCII: 2
 };
 
-constexpr size_t flag_dim = 3;
-constexpr size_t var_dim = 4;
-constexpr Flag flag_arr_sent[flag_dim] = {Flag::a, Flag::b, Flag::c};
-constexpr float var_arr_sent[var_dim] = {-2.161e7, -1. / 3, M_PI, 123456789.};
-
+constexpr size_t KEY_DIM = 3;
+constexpr size_t VAL_DIM = 4;
+constexpr Key key_arr_sent[KEY_DIM] = {Key::a, Key::b, Key::c};
+constexpr float val_arr_sent[VAL_DIM] = {-2.161e7, -1. / 3, M_PI, 123456789.};
 
 void send_fun();
 void receive_fun();
-void print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim]);
+void print_result(Key (&key_arr)[KEY_DIM], float (&val_arr)[VAL_DIM]);
 
-#ifdef WIN_COMPAT
-udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port);
-#else
-udp_msg::sock<Flag, float, flag_dim, var_dim> udp(hostname, port);
-#endif
+udp_msg::sock<Key, float, KEY_DIM, VAL_DIM> udp(hostname, port);
 
 int
 main()
@@ -53,51 +48,51 @@ main()
 void
 send_fun()
 {
-	udp.send(flag_arr_sent, var_arr_sent);
+	udp.send(key_arr_sent, val_arr_sent);
 }
 
 void
 receive_fun()
 {
-	Flag flag_arr[flag_dim];
-	float var_arr[var_dim];
+	Key key_arr[KEY_DIM];
+	float val_arr[VAL_DIM];
 
 	bool did_receive = false;
 
 	while (!did_receive) {
-		if (udp.receive(flag_arr, var_arr) > 0) {
+		if (udp.receive(key_arr, val_arr) > 0) {
 			did_receive = true;
 		}
 	}
 
 	//* verify
-	print_result(flag_arr, var_arr);
+	print_result(key_arr, val_arr);
 
-	for (size_t i = 0; i < flag_dim; ++i) {
-		if (flag_arr[i] != flag_arr_sent[i]) {
+	for (size_t i = 0; i < KEY_DIM; ++i) {
+		if (key_arr[i] != key_arr_sent[i]) {
 			exit(1);
 		}
 	}
 
-	for (size_t i = 0; i < var_dim; ++i) {
-		if (var_arr[i] != var_arr_sent[i]) {
+	for (size_t i = 0; i < VAL_DIM; ++i) {
+		if (val_arr[i] != val_arr_sent[i]) {
 			exit(1);
 		}
 	}
 }
 
 void
-print_result(Flag (&flag_arr)[flag_dim], float (&var_arr)[var_dim])
+print_result(Key (&key_arr)[KEY_DIM], float (&val_arr)[VAL_DIM])
 {
 	printf("Received");
 
-	for (size_t i = 0; i < flag_dim; ++i) {
-		printf(" 0x%02x", static_cast<unsigned char>(flag_arr[i]));
+	for (size_t i = 0; i < KEY_DIM; ++i) {
+		printf(" 0x%02x", static_cast<unsigned char>(key_arr[i]));
 	}
 	printf(":");
 
-	for (size_t i = 0; i < var_dim; ++i) {
-		printf(" %g", var_arr[i]);
+	for (size_t i = 0; i < VAL_DIM; ++i) {
+		printf(" %g", val_arr[i]);
 	}
 	printf(" to %s:%u\n", hostname, port);
 }
