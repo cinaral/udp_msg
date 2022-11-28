@@ -26,12 +26,16 @@
 
 #include "udp_msg.hpp"
 #include "cxxopts.hpp"
-#include <iomanip>
-#include <iostream>
+#include <cstdio>
 #include <string>
+#include <thread>
 
-// constexpr char default_hostname[] = "127.0.0.1";
-// constexpr unsigned default_port = 11337;
+//* IP and port
+constexpr char hostname[] = "127.0.0.1";
+constexpr unsigned port = 11337;
+
+using udp_msg::Real_T;
+using udp_msg::size_t;
 
 enum class Key : unsigned char {
 	a = 0x30, //* ASCII: 0
@@ -42,80 +46,100 @@ constexpr size_t key_dim = 1;
 constexpr size_t val_dim = 1;
 
 const std::string default_IP = "127.0.0.1";
+const std::string default_port = std::to_string(11337);
 const std::string default_key{static_cast<unsigned char>(Key::a)};
 const std::string default_val = std::to_string(3.14159265358979323846);
-const std::string default_port = std::to_string(11337);
+const std::string default_timeout = std::to_string(5000);
 
+bool is_listening = false;
 // void print_telemetry(config::Flag flag_recv, float val_recv);
+void receive_fun();
 
 int
 main(int argc, char const *argv[])
 {
-	cxxopts::Options options(
-	    "send_udp",
-	    "Send a single 5-byte flag-value pair UDP packet to a given IP and port. \nThe "
-	    "available flags are defined in shared/config.hpp.");
-	options.positional_help("[ip]");
-	options.show_positional_help();
+	cxxopts::Options opts(
+	    "udp_msg", "Send or receive a flag-value pair UDP packet to a given IP and port.");
+	opts.positional_help("[ip]");
+	opts.show_positional_help();
 	// clang-format off
-	options.add_options()
+	opts.add_options()
 		("h,help", "Print usage")
 		("ip", "IP Address (e.g. \"192.168.1.1\")", cxxopts::value<std::string>()->default_value(default_IP))
 		("l,listen", "Enable listening mode")
 		("p,port", "Port", cxxopts::value<std::string>()->default_value(default_port))
 		("f,flag", "Key", cxxopts::value<std::string>()->default_value(default_key))
 		("v,value", "Value", cxxopts::value<std::string>()->default_value(default_val));
+		("t,timeout", "Timeout", cxxopts::value<std::string>()->default_value(default_timeout));
 	// clang-format on
-	options.parse_positional({"ip"});
+	opts.parse_positional({"ip"});
 
 	try {
-		auto result = options.parse(argc, argv);
+		//* parse the options
+		auto result = opts.parse(argc, argv);
 
 		if (result.count("help")) {
-			std::cout << options.help() << std::endl;
+			std::cout << opts.help() << std::endl;
 			return 0;
 		}
 
 		if (result.count("listen")) {
-			std::cout << options.help() << std::endl;
-			return 0;
+			is_listening = true;
 		}
-
 		const std::string hostname = result["ip"].as<std::string>();
 		const unsigned port = std::stoi(result["port"].as<std::string>());
-		const Key key[] = {result["key"].as<std::string>().c_str()[0]};
-		const float value[] = {std::stof(result["value"].as<std::string>())};
+		const Key key[] = {static_cast<Key>(result["key"].as<std::string>().c_str()[0])};
+		const Real_T value[] = {std::stof(result["value"].as<std::string>())};
+		const int timeout_duration = std::stoi(result["timeout"].as<std::string>());
+		//* open the socket
+		udp_msg::sock<Key, Real_T, key_dim, val_dim> soc(hostname.c_str(), port,
+		                                                 is_listening);
 
-		udp_msg::sock<Key, float, key_dim, val_dim> soc(hostname.c_str(), port);
+		if (is_listening) {
+			std::thread thread_receive(receive_fun, std::ref(soc),
+			                           std::cref(timeout_duration));
 
-		soc.send(key, val_arr);
+			//* send UDP packet
+			soc.send(key, value);
+			printf("Sent 0x%02x: %g to %s:%u\n", key[0], value[0], hostname.c_str(),
+			       port);
 
-		////* send UDP packet
-		// UdpHandler udp(hostname, port);
-		// udp.initialize();
-		// udp.write(static_cast<config::Flag>(flag), value);
+		} else {
+			//* send UDP packet
+			soc.send(key, value);
+			printf("Sent 0x%02x: %g to %s:%u\n", key[0], value[0], hostname.c_str(),
+			       port);
+		}
 
-		// std::cout << "Sent 0x" << std::hex << +flag << ": " << std::dec << value << " to
-		// "
-		//	  << hostname << ":" << port << std::endl;
-
-		////* echo if needed
-		// if (flag == static_cast<unsigned char>(config::Flag::echo)) {
-		//	config::Flag flag_recv = config::Flag::null;
-		//	float val_recv = 0;
-
-		//	for (int i = 0; i < config::echo_size; ++i) {
-		//		flag_recv = udp.read(&val_recv);
-		//		print_telemetry(flag_recv, val_recv);
-		//	}
-		//}
 	} catch (cxxopts::option_has_no_value_exception const &) {
 		std::cout << "Incorrect arguments!" << std::endl;
-		std::cout << options.help() << std::endl;
-		return 0;
+		std::cout << opts.help() << std::endl;
 	}
-
 	return 0;
+}
+
+void
+receive_fun(udp_msg::sock<Key, Real_T, key_dim, val_dim> &soc, const int &timeout_duration)
+{
+	Key key_arr[key_dim];
+	Real_T val_arr[val_dim];
+	bool was_received = false;
+	auto start = std::chrono::high_resolution_clock::now();
+	auto now = std::chrono::high_resolution_clock::now();
+	auto since_start = start - now;
+	//* while loop on timeout
+	while (since_start < std::chrono::milliseconds(timeout_duration)) {
+		//* receive
+		if (soc.receive(key_arr, val_arr) > 0) {
+			//* print received
+			printf("Received 0x%02x: %g to %s:%u\n", key_arr[0], val_arr[0], hostname,
+			       port);
+			break;
+		}
+	}
+	if (was_received) {
+		printf("No message received after %d ms\n", timeout_duration);
+	}
 }
 
 // void
@@ -159,51 +183,3 @@ main(int argc, char const *argv[])
 //	std::cout << "0x" << std::hex << +static_cast<unsigned char>(flag_recv) << ": "
 //		  << std::setw(hex_width) << std::dec << val_recv << std::endl;
 //}
-
-#include "udp_msg.hpp"
-#include <cstdio>
-
-//* IP and port
-constexpr char hostname[] = "127.0.0.1";
-constexpr unsigned port = 11337;
-
-enum class Flag : unsigned char {
-	null = 0x0,
-	a = 0x30, //* ASCII: 0
-	b = 0x31, //* ASCII: 1
-	c = 0x32  //* ASCII: 2
-};
-
-constexpr size_t KEY_DIM = 3;
-constexpr size_t VAL_DIM = 4;
-constexpr Flag flag_arr_sent[KEY_DIM] = {Flag::a, Flag::b, Flag::c};
-constexpr float var_arr_sent[VAL_DIM] = {-2.161e7, -1. / 3, 3.14, 123456789.};
-
-void print_result();
-
-int
-main()
-{
-	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port, false);
-
-	udp.send(flag_arr_sent, var_arr_sent);
-	print_result();
-
-	return 0;
-}
-
-void
-print_result()
-{
-	printf("Sent");
-
-	for (size_t i = 0; i < KEY_DIM; ++i) {
-		printf(" 0x%02x", static_cast<unsigned char>(flag_arr_sent[i]));
-	}
-	printf(":");
-
-	for (size_t i = 0; i < VAL_DIM; ++i) {
-		printf(" %g", var_arr_sent[i]);
-	}
-	printf(" to %s:%u\n", hostname, port);
-}

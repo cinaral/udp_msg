@@ -1,51 +1,45 @@
 #include "udp_msg.hpp"
+#include <chrono>
 #include <cstdio>
 
-//* IP and port
+using udp_msg::Real_T;
+using udp_msg::size_t;
+using key_t = unsigned char;
+
 constexpr char hostname[] = "127.0.0.1";
 constexpr unsigned port = 11337;
-
-enum class Flag : unsigned char {
-	null = 0x0,
-	a = 0x30, //* ASCII: 0
-	b = 0x31, //* ASCII: 1
-	c = 0x32  //* ASCII: 2
-};
-
-constexpr size_t KEY_DIM = 3;
-constexpr size_t VAL_DIM = 4;
-
-void print_result(Flag (&key_arr)[KEY_DIM], float (&val_arr)[VAL_DIM]);
+constexpr size_t key_dim = 1;
+constexpr size_t val_dim = 1;
+constexpr int timeout_duration = 10000; //* ms
 
 int
 main()
 {
-	udp_msg::sock<Flag, float, KEY_DIM, VAL_DIM> udp(hostname, port);
+	//* create a socket
+	udp_msg::sock<key_t, Real_T, key_dim, val_dim> soc(hostname, port);
+	key_t key_arr[key_dim];
+	Real_T val_arr[val_dim];
+	bool was_received = false;
 
-	Flag key_arr[KEY_DIM];
-	float val_arr[VAL_DIM];
-
-	while (true) {
-
-		if (udp.receive(key_arr, val_arr)) {
-			print_result(key_arr, val_arr);
+	auto start = std::chrono::high_resolution_clock::now();
+	auto now = std::chrono::high_resolution_clock::now();
+	auto since_start = start - now;
+	//* while loop on timeout
+	while (since_start < std::chrono::milliseconds(timeout_duration)) {
+		//* receive
+		if (soc.receive(key_arr, val_arr) > 0) {
+			//* print received
+			printf("Received 0x%02x: %g to %s:%u\n", key_arr[0], val_arr[0], hostname,
+			       port);
+			was_received = true;
+			break;
 		}
+		now = std::chrono::high_resolution_clock::now();
+		since_start = now - start;
+	}
+
+	if (!was_received) {
+		printf("No message received after %d ms\n", timeout_duration);
 	}
 	return 0;
-}
-
-void
-print_result(Flag (&key_arr)[KEY_DIM], float (&val_arr)[VAL_DIM])
-{
-	printf("Received");
-
-	for (size_t i = 0; i < KEY_DIM; ++i) {
-		printf(" 0x%02x", static_cast<unsigned char>(key_arr[i]));
-	}
-	printf(":");
-
-	for (size_t i = 0; i < VAL_DIM; ++i) {
-		printf(" %g", val_arr[i]);
-	}
-	printf(" to %s:%u\n", hostname, port);
 }

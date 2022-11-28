@@ -30,6 +30,7 @@
 #include "receive.hpp"
 #include "send.hpp"
 #include "sock_compat.hpp"
+#include "types.hpp"
 #include <fcntl.h>
 
 namespace udp_msg
@@ -41,8 +42,8 @@ namespace udp_msg
 template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class sock
 {
   public:
-	sock(const char hostname[], const unsigned port, const bool is_nonblocking = true,
-	     const bool is_binding = true, const int af = AF_INET, const int type = SOCK_DGRAM,
+	sock(const char hostname[], const unsigned port, const bool is_binding = true,
+	     const bool is_nonblocking = true, const int af = AF_INET, const int type = SOCK_DGRAM,
 	     const int protocol = 0)
 	{
 		//* create the socket
@@ -56,17 +57,17 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 			host_ = reinterpret_cast<sockaddr *>(&host_in_);
 			host_size_ = sizeof(host_in_);
 
-			//* do not block to send and receive
-			if (is_nonblocking) {
-				::udp_msg::set_nonblocking(sock_);
-			}
-
 			//* bind to port in order to receive, this is not required to send
 			if (is_binding) {
 				if (::bind(sock_, host_, host_size_) < 0) {
 					printf("Binding failed.\n");
 				}
 			}
+			//* do not block to send and receive
+			if (is_nonblocking) {
+				::udp_msg::set_nonblocking(sock_);
+			}
+
 		} else {
 			printf("Socket creation failed.\n");
 			::udp_msg::close(sock_);
@@ -90,7 +91,7 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 	int
 	receive(KEY_T (&key_arr)[KEY_DIM], VAL_T (&val_arr)[VAL_DIM])
 	{
-		return ::udp_msg::receive(&sock_, host_, &host_size_, key_arr, val_arr);
+		return ::udp_msg::receive(sock_, host_, &host_size_, key_arr, val_arr);
 	};
 
 	/*
@@ -103,16 +104,15 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 	 * 2. `val_arr`: array of values
 	 */
 	int
-	send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM])
+	send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM]) const
 	{
-		return ::udp_msg::send(&sock_, host_, host_size_, key_arr, val_arr);
+		return ::udp_msg::send(sock_, host_, host_size_, key_arr, val_arr);
 	};
 
   private:
 	SOCKET sock_;
 	sockaddr_in host_in_;
 	sockaddr *host_;
-	// sockaddr_in host_;
 	socklen_t host_size_;
 };
 } // namespace udp_msg

@@ -46,6 +46,7 @@
 #endif
 #include <unistd.h> //* close
 #include <cstdio>   //* printf
+#include "types.hpp"
 
 /*
  * `SOCKET` compatibility

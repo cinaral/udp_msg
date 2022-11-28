@@ -49,8 +49,8 @@ namespace udp_msg
 template <typename SOCK_T, typename SOCKLEN_T, typename KEY_T, typename VAL_T, size_t KEY_DIM,
           size_t VAL_DIM>
 int
-send(SOCK_T *sock, sockaddr *dest, SOCKLEN_T dest_size, const KEY_T (&key_arr)[KEY_DIM],
-     const VAL_T (&val_arr)[VAL_DIM])
+send(const SOCK_T &sock, const sockaddr *const dest, const SOCKLEN_T &dest_size,
+     const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM])
 {
 	constexpr size_t max_msg_size = 512;                //* the UDP packet should not be too big
 	constexpr size_t key_size = sizeof(KEY_T[KEY_DIM]); //* flag size in bytes
@@ -80,7 +80,7 @@ send(SOCK_T *sock, sockaddr *dest, SOCKLEN_T dest_size, const KEY_T (&key_arr)[K
 		msg[key_size + i] = val_byte_arr.b[i];
 	}
 	//* send message
-	return ::sendto(*sock, msg, msg_size, 0, dest, dest_size);
+	return ::sendto(sock, msg, msg_size, 0, dest, dest_size);
 }
 } // namespace udp_msg
 #endif

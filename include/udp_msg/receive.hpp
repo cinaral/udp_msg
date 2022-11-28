@@ -49,7 +49,7 @@ namespace udp_msg
 template <typename SOCK_T, typename SOCKLEN_T, typename KEY_T, typename VAL_T, size_t KEY_DIM,
           size_t VAL_DIM>
 int
-receive(SOCK_T *sock, sockaddr *from, SOCKLEN_T *from_size, KEY_T (&key_arr)[KEY_DIM],
+receive(const SOCK_T &sock, sockaddr *const from, SOCKLEN_T *const from_size, KEY_T (&key_arr)[KEY_DIM],
         VAL_T (&val_arr)[VAL_DIM])
 {
 	constexpr size_t key_size = sizeof(KEY_T[KEY_DIM]); //* flag size in bytes
@@ -60,7 +60,7 @@ receive(SOCK_T *sock, sockaddr *from, SOCKLEN_T *from_size, KEY_T (&key_arr)[KEY
 	static var_bT<VAL_T[VAL_DIM]> val_byte_arr; //* buffer of VAL_T and unsigned char union
 
 	//* receive message
-	int res = ::recvfrom(*sock, msg, msg_size, 0, from, from_size);
+	int res = ::recvfrom(sock, msg, msg_size, 0, from, from_size);
 
 	//* if received data
 	if (res > 0) {

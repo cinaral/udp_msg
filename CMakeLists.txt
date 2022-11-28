@@ -39,8 +39,8 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 		send_receive
 	)
 	set(EXAMPLE_NAMES
-		#send
-		#receive
+		send
+		receive
 	)
 	set(BENCHMARK_NAMES
 	)
@@ -81,15 +81,15 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 	#***************#
 
 	#* udp_msg
-	#add_executable(
-	#	udp_msg 
-	#	${SRC_DIR}/udp_msg.cpp				
-	#)
-	#target_include_directories(
-	#	udp_msg PRIVATE 
-	#	${INCLUDE_DIR}
-	#	${cxxopts_SOURCE_DIR}/include
-	#)
+	add_executable(
+		udp_msg 
+		${SRC_DIR}/udp_msg.cpp				
+	)
+	target_include_directories(
+		udp_msg PRIVATE 
+		${INCLUDE_DIR}
+		${cxxopts_SOURCE_DIR}/include
+	)
 
 	#***********#
 	#* Testing *#

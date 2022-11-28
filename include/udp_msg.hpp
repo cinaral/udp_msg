@@ -31,5 +31,6 @@
 #include "udp_msg/send.hpp"
 #include "udp_msg/sock.hpp"
 #include "udp_msg/sock_compat.hpp"
+#include "udp_msg/types.hpp"
 
 #endif
