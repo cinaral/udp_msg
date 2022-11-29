@@ -19,8 +19,9 @@ main()
 	//* create a socket
 	udp_msg::sock<key_t, Real_T, key_dim, val_dim> udp(hostname, port, false);
 	//* send
-	udp.send(key_sent, val_sent);
-	//* print sent
-	printf("Sent 0x%02x: %g to %s:%u\n", key_sent[0], val_sent[0], hostname, port);
+	if (udp.send(key_sent, val_sent) > 0) {
+		//* print sent
+		printf("Sent 0x%02x: %g to %s:%u\n", key_sent[0], val_sent[0], hostname, port);
+	}
 	return 0;
 }
