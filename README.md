@@ -20,7 +20,7 @@ This lightweight header-only library sends/receives key and value arrays over UD
   
 Include all or some of the headers in ```include/``` into your project. You could use [FetchContent()](https://cmake.org/cmake/help/latest/module/FetchContent.html) in your ```CMakeLists.txt```:
 ```CMake
-FetchContent_Declare(udp_msg URL https://github.com/cinaral/udp_msg/releases/download/<RELEASE_TAG>/udp_msg-src.zip)
+FetchContent_Declare(udp_msg URL https://github.com/cinaral/udp_msg/releases/download/<RELEASE_TAG>/src.zip)
 FetchContent_MakeAvailable(udp_msg)
 ```
 
