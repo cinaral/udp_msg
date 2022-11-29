@@ -96,5 +96,5 @@ print_result(Key (&key_arr)[key_dim], Real_T (&val_arr)[val_dim])
 	for (size_t i = 0; i < val_dim; ++i) {
 		printf(" %g", val_arr[i]);
 	}
-	printf(" to %s:%u\n", hostname, port);
+	printf(" from %s:%u\n", hostname, port);
 }

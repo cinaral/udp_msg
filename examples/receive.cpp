@@ -29,7 +29,7 @@ main()
 		//* receive
 		if (soc.receive(key_arr, val_arr) > 0) {
 			//* print received
-			printf("Received 0x%02x: %g to %s:%u\n", key_arr[0], val_arr[0], hostname,
+			printf("Received 0x%02x: %g from %s:%u\n", key_arr[0], val_arr[0], hostname,
 			       port);
 			was_received = true;
 			break;
