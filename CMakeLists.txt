@@ -1,13 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(
-	template_cpp_project
+	udp_msg
 	VERSION 1.0.0 
 	LANGUAGES CXX
 )
-
-#* dependencies
-Include(FetchContent)
 
 
 
@@ -175,56 +172,3 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-src.zip
 	)
 endif()
-
-
-##* useful compile options:
-#add_compile_options(
-	#-fmax-errors=5 #* max number of errors
-	#-Wno-unused-variable
-	#-Wno-unused-parameter
-	#-Wno-unused-but-set-parameter
-	#-Wl,--stack,17179869184
-	#-Wl,--stack,8388608
-	#* [Optional]: for embedded systems the following flags may be enabled
-	#-fno-rtti #* disable RTTI 
-	#-fno-exceptions #* disable exceptions  
-	#-fno-non-call-exceptions  
-	#-fno-use-cxa-atexit #* disable destructors 
-	#-fno-common #* declare globals once 
-	#-ffreestanding #* standard library may be unavailable 
-	#-fsanitize=leak #* a memory leak detector
-	#-fsanitize=undefined #* a fast undefined behavior detector
-	#-fsanitize-undefined-trap-on-error #* report for sanitizers mentioned in comma-separated list of opts undefined behavior using __builtin_trap rather than a libubsan library routine
-	#-fstack-protector-strong #* stack guard, costs one write and read per function, needs canary
-#)
-
-
-##* force build type
-#if(NOT CMAKE_BUILD_TYPE)
-#    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
-#            "Default build type: Debug" FORCE)
-#endif()
-
-
-##* set the number of CPUs 
-#include(ProcessorCount)
-#ProcessorCount(N)
-
-#if(NOT N EQUAL 0)
-#	set(CTEST_BUILD_FLAGS -j${N})
-#	set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${N})
-#endif()
-#message("> Number of cores set to ${N}")
-
-
-##* catch2, used for testing
-#FetchContent_Declare(
-#	Catch2
-#	GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-#	GIT_TAG v3.0.1
-#)
-#FetchContent_MakeAvailable(Catch2)
-
-
-#* disable annoying deprecation warnings
-#set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)

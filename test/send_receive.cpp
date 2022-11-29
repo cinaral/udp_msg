@@ -36,7 +36,6 @@ int
 main()
 {
 	//* start receive thread
-	// auto a3 = std::async(std::launch::async, receive_fun());
 	std::thread thread_receive(receive_fun);
 	//* send
 	std::thread thread_send(send_fun);
