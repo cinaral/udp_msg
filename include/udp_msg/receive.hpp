@@ -29,6 +29,7 @@
 
 #include "sock_compat.hpp"
 #include "types.hpp"
+#include "unpack_msg.hpp"
 
 namespace udp_msg
 {
@@ -49,37 +50,21 @@ namespace udp_msg
 template <typename SOCK_T, typename SOCKLEN_T, typename KEY_T, typename VAL_T, size_t KEY_DIM,
           size_t VAL_DIM>
 int
-receive(const SOCK_T &sock, sockaddr *const from, SOCKLEN_T *const from_size, KEY_T (&key_arr)[KEY_DIM],
-        VAL_T (&val_arr)[VAL_DIM])
+receive(const SOCK_T &sock, sockaddr *const from, SOCKLEN_T *const from_size,
+        KEY_T (&key_arr)[KEY_DIM], VAL_T (&val_arr)[VAL_DIM])
 {
 	constexpr size_t key_size = sizeof(KEY_T[KEY_DIM]); //* flag size in bytes
 	constexpr size_t val_size = sizeof(VAL_T[VAL_DIM]); //* variable size in bytes
 	constexpr size_t msg_size = key_size + val_size;    //* message size in bytes
 	static char msg[msg_size];                          //* buffer to hold incoming packet
-	static var_bT<KEY_T[KEY_DIM]> key_byte_arr; //* buffer of KEY_T and unsigned char union
-	static var_bT<VAL_T[VAL_DIM]> val_byte_arr; //* buffer of VAL_T and unsigned char union
 
 	//* receive message
 	int res = ::recvfrom(sock, msg, msg_size, 0, from, from_size);
 
 	//* if received data
 	if (res > 0) {
-		//* read keys in msg
-		for (size_t i = 0; i < key_size; ++i) {
-			key_byte_arr.b[i] = msg[i];
-		}
-		//* read values in msg
-		for (size_t i = 0; i < val_size; ++i) {
-			val_byte_arr.b[i] = msg[key_size + i];
-		}
-		//* copy keys from the union
-		for (size_t i = 0; i < KEY_DIM; ++i) {
-			key_arr[i] = key_byte_arr.v[i];
-		}
-		//* copy values from the union
-		for (size_t i = 0; i < VAL_DIM; ++i) {
-			val_arr[i] = val_byte_arr.v[i];
-		}
+		//* unpack keys and values from a msg
+		unpack_msg<KEY_T, VAL_T, KEY_DIM, VAL_DIM>(msg, key_arr, val_arr);
 	}
 	return res;
 }

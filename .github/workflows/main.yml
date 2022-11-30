@@ -26,5 +26,5 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/template_cpp_project-src.zip
+          file: build/src.zip
           tag: ${{ github.ref }}

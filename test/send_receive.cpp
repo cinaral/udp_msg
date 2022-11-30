@@ -36,7 +36,6 @@ int
 main()
 {
 	//* start receive thread
-	//auto a3 = std::async(std::launch::async, receive_fun());
 	std::thread thread_receive(receive_fun);
 	//* send
 	std::thread thread_send(send_fun);
@@ -50,7 +49,9 @@ main()
 void
 send_fun()
 {
-	soc.send(key_arr_sent, val_arr_sent);
+	if (soc.send(key_arr_sent, val_arr_sent) < 0) {
+		exit(1);
+	}
 }
 
 void
@@ -95,5 +96,5 @@ print_result(Key (&key_arr)[key_dim], Real_T (&val_arr)[val_dim])
 	for (size_t i = 0; i < val_dim; ++i) {
 		printf(" %g", val_arr[i]);
 	}
-	printf(" to %s:%u\n", hostname, port);
+	printf(" from %s:%u\n", hostname, port);
 }
