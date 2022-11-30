@@ -36,12 +36,11 @@ namespace udp_msg
  *
  * `pack_msg(key_arr, val_arr, OUT:msg)`
  *
- * IN:
  * 1. `key_arr`: array of keys
  * 2. `val_arr`: array of values
  *
  * OUT:
- * 1. `msg`: array of keys and values
+ * 3. `msg`: array of keys and values
  */
 template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM>
 void

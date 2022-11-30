@@ -38,14 +38,13 @@ namespace udp_msg
  *
  * `send(sock, dest, dest_size, OUT:key_arr, OUT:val_arr)`
  *
- * IN:
  * 1. `sock`: socket
  * 2. `dest`: receiver's address
  * 3. `dest_size`: size of `dest`
  *
  * OUT:
- * 1. `key_arr`: array of keys
- * 2. `val_arr`: array of values
+ * 4. `key_arr`: array of keys
+ * 5. `val_arr`: array of values
  */
 template <typename SOCK_T, typename SOCKLEN_T, typename KEY_T, typename VAL_T, size_t KEY_DIM,
           size_t VAL_DIM>
