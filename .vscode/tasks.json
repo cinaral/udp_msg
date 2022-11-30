@@ -41,13 +41,7 @@
 			"dependsOn": [
                 "Build"
             ],
-		},
-		{
-		"label": "Build and run temp.exe",
-			"type": "shell",
-			"command": "./scripts/build_and_run_temp.sh",
-			"group": "build"
-		},
+		},	
 	],
 	"version": "2.0.0",
 	"type": "shell",
