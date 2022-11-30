@@ -38,6 +38,8 @@ namespace udp_msg
 
 /*
  * A socket class to send and receive messages.
+ *
+ * `sock<KEY_T, VAL_T, KEY_DIM, VAL_DIM>(hostname, port, ...)`
  */
 template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class sock
 {
@@ -97,7 +99,7 @@ template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class 
 	/*
 	 * Sends a UDP message of size KEY_DIM + VAL_DIM
 	 *
-	 * `receive(key_arr, val_arr)`
+	 * `send(key_arr, val_arr)`
 	 *
 	 * 1. `key_arr`: array of keys
 	 * 2. `val_arr`: array of values

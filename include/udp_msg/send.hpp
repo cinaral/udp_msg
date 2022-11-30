@@ -36,7 +36,7 @@ namespace udp_msg
 /*
  * Sends a UDP message from a socket.
  *
- * `send(sock, dest, dest_size, OUT:key_arr, OUT:val_arr)`
+ * `send<OPT: SOCK_T, SOCKLEN_T, KEY_T, VAL_T, KEY_DIM, VAL_DIM>(sock, dest, dest_size, OUT:key_arr, OUT:val_arr)`
  *
  * 1. `sock`: socket
  * 2. `dest`: receiver's address

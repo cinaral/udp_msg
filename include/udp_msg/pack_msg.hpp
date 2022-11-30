@@ -34,7 +34,7 @@ namespace udp_msg
 /*
  * Packs keys and values into a msg.
  *
- * `pack_msg(key_arr, val_arr, OUT:msg)`
+ * `pack_msg<OPT: KEY_T, VAL_T, KEY_DIM, VAL_DIM>(key_arr, val_arr, OUT:msg)`
  *
  * 1. `key_arr`: array of keys
  * 2. `val_arr`: array of values
