@@ -50,7 +50,7 @@ int receive(KEY_T (&key_arr)[KEY_DIM], VAL_T (&val_arr)[VAL_DIM]);
 
 To send use ```udp_msg::send()```:
 ```Cpp
-int	send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM]);
+int send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM]);
 ```
 
 # 4. Examples
