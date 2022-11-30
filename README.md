@@ -34,10 +34,10 @@ Create a socket object to send and receive:
 		const char hostname[], 
 		const unsigned port, 
 		const bool is_binding = true,
-	   	const bool is_nonblocking = true, 
+		const bool is_nonblocking = true, 
 		const int af = AF_INET, 
 		const int type = SOCK_DGRAM,
-	    	const int protocol = 0);
+		const int protocol = 0);
 	//* send
 	udp.send(key_sent, val_sent);
 ```
