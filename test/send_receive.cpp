@@ -30,7 +30,7 @@ void receive_fun();
 void print_result(Key (&key_arr)[key_dim], Real_T (&val_arr)[val_dim]);
 
 //* create a socket
-udp_msg::sock<Key, Real_T, key_dim, val_dim> soc(hostname, port);
+udp_msg::sock<Key, Real_T, key_dim, val_dim> soc(hostname, port, true);
 
 int
 main()

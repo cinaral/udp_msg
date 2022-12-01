@@ -17,7 +17,7 @@ int
 main()
 {
 	//* create a socket
-	udp_msg::sock<key_T, Real_T, key_dim, val_dim> udp(hostname, port, false);
+	udp_msg::sock<key_T, Real_T, key_dim, val_dim> udp(hostname, port);
 	//* send
 	if (udp.send(key_sent, val_sent) > 0) {
 		//* print sent

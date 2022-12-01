@@ -77,7 +77,7 @@ close(SOCKET sock)
 #else
 	return ::close(sock);
 #endif
-};
+}
 
 /*
  *  `::socket()` compatibility
@@ -95,7 +95,7 @@ socket(int af, int type, int protocol)
 #endif
 	//* start socket
 	return ::socket(af, type, protocol);
-};
+}
 
 /*
  *  `fcntl()` compatibility
@@ -109,7 +109,7 @@ set_nonblocking(SOCKET sock)
 #else
 	fcntl(sock, F_SETFL, O_NONBLOCK);
 #endif
-};
+}
 } // namespace udp_msg
 
 #endif

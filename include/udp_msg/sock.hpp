@@ -44,7 +44,7 @@ namespace udp_msg
 template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM> class sock
 {
   public:
-	sock(const char hostname[], const unsigned port, const bool is_binding = true,
+	sock(const char hostname[], const unsigned port, const bool is_binding = false,
 	     const bool is_nonblocking = true, const int af = AF_INET, const int type = SOCK_DGRAM,
 	     const int protocol = 0)
 	{
