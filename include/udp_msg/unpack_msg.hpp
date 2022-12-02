@@ -34,14 +34,13 @@ namespace udp_msg
 /*
  * Unpacks keys and values from a msg.
  *
- * `unpack_msg(msg, OUT:key_arr, OUT:val_arr)`
-  *
- * IN:
+ * `unpack_msg<OPT: KEY_T, VAL_T, KEY_DIM, VAL_DIM>(msg, OUT:key_arr, OUT:val_arr)`
+*
  * 1. `msg`: array of keys and values
  *
  * OUT:
- * 1. `key_arr`: array of keys
- * 2. `val_arr`: array of values
+ * 2. `key_arr`: array of keys
+ * 3. `val_arr`: array of values
  */
 template <typename KEY_T, typename VAL_T, size_t KEY_DIM, size_t VAL_DIM>
 void

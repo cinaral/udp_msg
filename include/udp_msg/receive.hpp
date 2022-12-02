@@ -36,16 +36,15 @@ namespace udp_msg
 /*
  * Receives a UDP message to a socket.
  *
- * `receive(sock, dest, dest_size, OUT:key_arr, OUT:val_arr)`
+ * `receive<OPT: SOCK_T, SOCKLEN_T, KEY_T, VAL_T, KEY_DIM, VAL_DIM>(sock, dest, dest_size, OUT:key_arr, OUT:val_arr)`
  *
- * IN:
  * 1. `sock`: socket
  * 2. `from`: sender's address
  * 3. `from_size`: size of `from`
  *
  * OUT:
- * 1. `key_arr`: array of keys
- * 2. `val_arr`: array of values
+ * 4. `key_arr`: array of keys
+ * 5. `val_arr`: array of values
  */
 template <typename SOCK_T, typename SOCKLEN_T, typename KEY_T, typename VAL_T, size_t KEY_DIM,
           size_t VAL_DIM>
@@ -64,7 +63,7 @@ receive(const SOCK_T &sock, sockaddr *const from, SOCKLEN_T *const from_size,
 	//* if received data
 	if (res > 0) {
 		//* unpack keys and values from a msg
-		unpack_msg<KEY_T, VAL_T, KEY_DIM, VAL_DIM>(msg, key_arr, val_arr);
+		unpack_msg(msg, key_arr, val_arr);
 	}
 	return res;
 }

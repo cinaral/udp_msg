@@ -6,7 +6,7 @@ using udp_msg::Real_T;
 using udp_msg::size_t;
 using key_T = unsigned char;
 
-constexpr char hostname[] = "127.0.0.1";
+constexpr char hostname[] = "10.66.71.254";
 constexpr unsigned port = 11337;
 constexpr size_t key_dim = 1;
 constexpr size_t val_dim = 1;
@@ -16,7 +16,7 @@ int
 main()
 {
 	//* create a socket
-	udp_msg::sock<key_T, Real_T, key_dim, val_dim> soc(hostname, port);
+	udp_msg::sock<key_T, Real_T, key_dim, val_dim> soc(hostname, port, true);
 	key_T key_arr[key_dim];
 	Real_T val_arr[val_dim];
 	bool was_received = false;

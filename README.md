@@ -34,10 +34,10 @@ Create a socket object to send and receive:
 		const char hostname[], 
 		const unsigned port, 
 		const bool is_binding = true,
-	   	const bool is_nonblocking = true, 
+		const bool is_nonblocking = true, 
 		const int af = AF_INET, 
 		const int type = SOCK_DGRAM,
-	    	const int protocol = 0);
+		const int protocol = 0);
 	//* send
 	udp.send(key_sent, val_sent);
 ```
@@ -50,7 +50,7 @@ int receive(KEY_T (&key_arr)[KEY_DIM], VAL_T (&val_arr)[VAL_DIM]);
 
 To send use ```udp_msg::send()```:
 ```Cpp
-int	send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM]);
+int send(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM]);
 ```
 
 # 4. Examples
@@ -64,7 +64,7 @@ int
 main()
 {
 	//* create a socket to receive one char and one float from 192.168.1.1:8887
-	udp_msg::sock<char, float, 1, 1> soc("192.168.1.1", 8887);
+	udp_msg::sock<char, float, 1, 1> soc("192.168.1.1", 8887, true);
 	//* buffer to hold the received message
 	char key_arr[1]; 
 	float val_arr[1];
@@ -85,7 +85,7 @@ See [receive.cpp](./examples/receive.cpp) for details.
 int
 main()
 {
-	//* create a socket to send ASCII '0' and 3.14f to 192.168.1.2:8887
+	//* create a socket to send ASCII '0' and 3.14f to 192.168.1.1:8887
 	udp_msg::sock<char, float, 1, 1> soc("192.168.1.2", 8887);
 	
 	if (udp.send(0x30, 3.14) > 0) {
