@@ -64,7 +64,7 @@ int
 main()
 {
 	//* create a socket to receive one char and one float from 192.168.1.1:8887
-	udp_msg::sock<char, float, 1, 1> soc("192.168.1.1", 8887, true);
+	udp_msg::sock<char, float, 1, 1> soc("192.168.1.1", 8887);
 	//* buffer to hold the received message
 	char key_arr[1]; 
 	float val_arr[1];
@@ -85,7 +85,7 @@ See [receive.cpp](./examples/receive.cpp) for details.
 int
 main()
 {
-	//* create a socket to send ASCII '0' and 3.14f to 192.168.1.1:8887
+	//* create a socket to send ASCII '0' and 3.14f to 192.168.1.2:8887
 	udp_msg::sock<char, float, 1, 1> soc("192.168.1.2", 8887);
 	
 	if (udp.send(0x30, 3.14) > 0) {

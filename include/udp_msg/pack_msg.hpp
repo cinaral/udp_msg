@@ -29,6 +29,10 @@
 
 #include "types.hpp"
 
+//* Fix the KEY_T clash with Teensy 4.1 library definition
+#define KEY_T_TEMP KEY_T
+#undef KEY_T
+
 namespace udp_msg
 {
 /*
@@ -70,5 +74,9 @@ pack_msg(const KEY_T (&key_arr)[KEY_DIM], const VAL_T (&val_arr)[VAL_DIM],
 	}
 }
 } // namespace udp_msg
+
+//* Fix the KEY_T clash with Teensy 4.1 library definition
+#define KEY_T KEY_T_TEMP
+#undef KEY_T
 
 #endif
