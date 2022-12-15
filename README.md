@@ -4,7 +4,7 @@ This lightweight header-only library sends/receives key and value arrays over UD
 - Can be used to open and manage sockets, translate multiple key-value arrays from and into messages. 
 - Maximum message size is limited to 512 MB to prevent fragmentation of the message into multiple UDP packets.
 - The default and the only translation done by this library interprets the value array as the specified value type. However, the keys can be used to communicate the types of the values if it is different from ```VALUE_T```.
-- Compatible with Linux and Windows (*tested on Linux Mint and Windows 10).
+- It was tested on Windows 10, Linux Mint, Raspberry Pi OS (2022).  
 
 ---  
 
