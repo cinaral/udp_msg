@@ -105,9 +105,9 @@ This library sends and receives two separate arrays, the first array contains th
   | Key (```char[4]```) |    Value (```float[12]```)     |
   | :-----------------: | :----------------------------: |
   |          A          |      $x_A$, $y_A$, $z_A$       |
-  |          B          |       $x_B$, $y_B$,$z_B$       |
+  |          B          |       $x_B$, $y_B$, $z_B$       |
   |          C          | $\theta_C$, $\phi_C$, $\psi_C$ |
-  |          D          | $\theta_D$, $\phi_D$,$\psi_D$  |
+  |          D          | $\theta_D$, $\phi_D$, $\psi_D$  |
   ```Cpp
 	char key[4] = {'A', 'B', 'C', 'D'};
 	float val[12] = {x_A, y_A, z_A, x_B, y_B, z_B, theta_C, phi_C, psi_C, theta_D, phi_D, psi_D};
