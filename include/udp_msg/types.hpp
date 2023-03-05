@@ -32,7 +32,7 @@
 namespace udp_msg
 {
 using size_t = std::size_t;
-#ifdef __USE_SINGLE_PRECISION__
+#ifdef USE_SINGLE_PRECISION
 using Real_T = float;
 #else
 using Real_T = double;

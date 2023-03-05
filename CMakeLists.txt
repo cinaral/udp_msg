@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 project(
 	udp_msg
-	VERSION 1.0.4
+	VERSION 1.0.5
 	LANGUAGES CXX
 )
 
@@ -72,7 +72,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 	endif()
 
 	if(SINGLE_PRECISION)
-		add_compile_options(-D__USE_SINGLE_PRECISION__) #* use single precision floats
+		add_compile_options(-DUSE_SINGLE_PRECISION) #* use single precision floats
 	endif()
 
 	#***********#
